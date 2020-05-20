@@ -95,7 +95,7 @@ login=()=>{
                 </div>
                 <div id="loginscreen" style={this.loginScreen()}>
                     <div className='login'>
-                        <input id="loginName" placeholder='nickname'></input>
+                        <input id="loginName" placeholder='Type a nickname'></input>
                         <button onClick={this.login}>Start game</button>
                     </div>
                 </div>
