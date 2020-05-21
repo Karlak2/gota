@@ -14,6 +14,7 @@ import Workshop from '../components/inviss/Workshop';
 
 export class Invisible extends Component {
     changeResource=(event)=>{
+        console.log(event)
         this.props.changeResource(event)
     }
     change=()=>{
@@ -32,7 +33,7 @@ export class Invisible extends Component {
                 <RhllorTemple/>
                 <Sept/>
                 <Treasury/>
-                <VillageCenter changeResource={this.changeResource} purchase={this.purchase} storage={this.props.storage}/>
+                <VillageCenter upgrades={this.props.upgrades[1]} change={this.change} changeResource={this.changeResource} purchase={this.purchase} storage={this.props.storage}/>
                 <Workshop />
             </div>
         )

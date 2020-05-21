@@ -136,6 +136,7 @@ export class VillageProduction extends Component {
         }
     }
     render() {
+        console.log(this.props.storage)
         let act=this.state.actfirst
         let clicked=this.state.clicked
         return (

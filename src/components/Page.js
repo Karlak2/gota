@@ -87,6 +87,7 @@ change=()=>{
 
 
 render() {
+    console.log(this.state.storage,"in page")
         return (
             <React.Fragment>
                 <div className="page">

@@ -23,11 +23,11 @@ router.post('/',async(req,res)=>{
             {type:'horse',amount:20},
             {type:'iron',amount:20},
             {type:'fish',amount:20},
+            {type:'fur',amount:20},
+            {type:'smallfolk',amount:20},
             {type:'ore',amount:20},
             {type:'wood',amount:20},
-            {type:'smallfolk',amount:20},
             {type:'cloth',amount:20},
-            {type:'fur',amount:20},
             {type:'grains',amount:20}
         ]
         let upgrades=[

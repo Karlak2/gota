@@ -3,13 +3,14 @@ import React, { Component } from 'react'
 import VillageUpgrades from './assets/VillageUpgrades'
 import VillageDetails from './assets/VillageDetails'
 import VillageProduction from './assets/VillageProduction'
+import axios from 'axios'
 
 export class VillageCenter extends Component {
     state={
         upgradeTypes:[
             {
                 name:'commonPasture',
-                act:0,
+                act:this.props.upgrades[0],
                 max:4,
                 pics:"/pictures/buildings/Upgrades/Village_Center_Common_Pasture_Upgrade.png",
                 head:"Common Pasture",
@@ -18,7 +19,7 @@ export class VillageCenter extends Component {
                 amountOfUpgrade:[['stone','horse'],'horse']
             },{
                 name:'mill',
-                act:0,
+                act:this.props.upgrades[1],
                 max:4,
                 pics:"/pictures/buildings/Upgrades/Village_Center_Mill_Upgrade.png",
                 head:"Mill",
@@ -27,7 +28,7 @@ export class VillageCenter extends Component {
                 amountOfUpgrade:[['fish','ore'],'ore']
             },{
                 name:'storeHouse',
-                act:0,
+                act:this.props.upgrades[2],
                 max:4,
                 pics:"/pictures/buildings/Upgrades/Village_Center_Storehouse_Upgrade.png",
                 head:"Storehouse",
@@ -36,7 +37,7 @@ export class VillageCenter extends Component {
                 amountOfUpgrade:[['iron','wood'],'wood']
             },{
                 name:'tannery',
-                act:0,
+                act:this.props.upgrades[3],
                 max:4,
                 pics:"/pictures/buildings/Upgrades/Village_Center_Tannery_Upgrade.png",
                 head:"Tannery",
@@ -45,7 +46,7 @@ export class VillageCenter extends Component {
                 amountOfUpgrade:[['fur','cloth'],'cloth']
             },{
                 name:'bakery',
-                act:0,
+                act:this.props.upgrades[4],
                 max:4,
                 pics:"/pictures/buildings/Upgrades/Village_Center_Bakery_Upgrade.png",
                 head:"Bakery",
@@ -54,8 +55,8 @@ export class VillageCenter extends Component {
                 amountOfUpgrade:[['smallfolk','grains'],'grains']
             },{
                 name:'brewhouse',
-                act:0,
-                max:4,
+                act:this.props.upgrades[5],
+                max:5,
                 pics:"/pictures/buildings/Upgrades/Village_Center_Brewhouse_Upgrade.png",
                 head:"Brewhouse",
                 required:5,
@@ -72,7 +73,7 @@ export class VillageCenter extends Component {
                     {type:'silver',amount:400},
                     {type:'smallfolk',amount:1}
                 ],
-                gives:"5% faster production time for Stone and Horses"
+                gives:"Enables production of horse, 5% faster production time for Stone and Horses"
             },
             {
                 level:2,
@@ -289,7 +290,7 @@ export class VillageCenter extends Component {
     production:[
         {
             resource:'stone',
-            prodTime:{minute:0,sec:5},
+            prodTime:{minute:20,sec:0},
             required:""
         },{
             resource:'horse',
@@ -331,6 +332,55 @@ export class VillageCenter extends Component {
     ],
     selectedResource:""
     }
+
+    componentDidUpdate(prevProps,prevState){
+        let a=true
+        prevProps.upgrades.map((pr,i)=>{
+            if(pr!==this.props.upgrades[i]){
+                a=false
+            }
+        })
+        if(!a){
+            console.log(prevProps.upgrades,this.props.upgrades)
+            console.log(this.state.production.filter(ind=>ind.resource==='stone'))
+            let cur=this.state.production
+            let upgradeLevel=0
+            let newUpgrades=this.state.upgradeTypes
+            let am=1
+            newUpgrades.map((type,index)=>{
+                let speed=20
+                type.act=this.props.upgrades[index]
+                upgradeLevel+=this.props.upgrades[index]
+                type.typeOfUpgrade.map((upg,ind)=>{
+                    if(upg==='enable'&&type.act>0){
+                        cur.map((row,ind2)=>{
+                            if(row.resource===type.amountOfUpgrade[ind]){
+                                console.log(row.resource,type.amountOfUpgrade[ind])
+                                cur[ind2].required=""
+                            }
+                        })
+                    } else if(upg==='prodSpeed'){
+                        type.amountOfUpgrade[ind].map(resou=>{
+                            cur.map((row,ind)=>{
+                                if(row.resource===resou){
+                                    cur[ind].prodTime.minute=speed-this.props.upgrades[index]
+                                }
+                            })
+                        })
+                    } else if(upg==="prodAmount"){
+                        am+=this.props.upgrades[index]
+                    }
+                })
+                console.log(this.state.upgradeTypes)
+            })
+            this.setState({upgradeTypes:newUpgrades,production:cur,upgradeLevel:upgradeLevel,productedAmount:am})
+        } else {
+            console.log("No upgrades in villagecenter")
+            return
+        }
+    }
+
+
     upgradeBuilding=(event)=>{
         let a=this.state;
         let newVal=a.upgradeTypes
@@ -359,21 +409,21 @@ export class VillageCenter extends Component {
         this.clock(event)
     }
     clock=(event)=>{
-        this.myInterval = setInterval(() => {
+        console.log('clock starting')
+        this.villageUpgradeInterval = setInterval(() => {
             const { sec, minute,hour } = this.state
+            console.log(sec, minute,hour)
             if (sec > 0) {
                 this.setState(({ sec }) => ({
                     sec: sec - 1
                 }))
-            }
-            if (sec === 0) {
+            } else {
                 if (minute != 0) {
                     this.setState(({ minute }) => ({
                         minute: minute - 1,
                         sec: 59
                     }))
-                } 
-                if(minute===0){
+                } else{
                     if(hour!=0){
                         this.setState(({ hour }) => ({
                             hour: hour - 1,
@@ -383,7 +433,7 @@ export class VillageCenter extends Component {
                     } else {
                         console.log(minute,sec)
                         console.log("ting")
-                        clearInterval(this.myInterval)
+                        clearInterval(this.villageUpgradeInterval)
                         document.getElementById("finishVillageUpgrade").style.display="inline-flex"
                         this.setState({hour:"",minute:"",sec:"",ev:event})
                     }
@@ -394,41 +444,29 @@ export class VillageCenter extends Component {
 
     }
     finishUpgrade=()=>{
-        console.log("yeah")
         let a=this.state;
         let event=this.state.ev
         let newVal=a.upgradeTypes
-        let lev=a.upgradeLevel  
-        newVal[event].act+=1
-        let am=this.state.productedAmount
-        newVal[event].typeOfUpgrade.map((type,index)=>{
-            if(type==='prodSpeed'){
-                this.state.production.map(row=>{
-                    if(row.resource===newVal[event].amountOfUpgrade[index][0]||row.resource===newVal[event].amountOfUpgrade[index][1]){
-                        row.prodTime.minute=row.prodTime.minute-1
-                    }
-                })
-            } else if(type==='enable'){
-                this.state.production.map(row=>{
-                    if(row.resource===newVal[event].amountOfUpgrade[index]){
-                        row.required=""
-                    }
-                })
-            } else if(type==="prodAmount"){
-                am=am+1
+        console.log(event)
+        if(newVal[event].act===newVal[event].max){return}
+        axios.put('http://localhost:8080/updateUpgrades',{name:document.getElementById('nickName').innerHTML,type:1,row:event})
+        .then(res=>{
+            if(res.data.suc){
+                this.setState({
+                incomingUpgrade:"",
+                minute:"",
+                sec:"",
+                hour:""})
+                this.props.change()
             }
         })
-        lev=lev+1
-        if(newVal[event].act>newVal[event].max){return}
-        this.setState({upgradeTypes:newVal,
-            upgradeLevel:lev,
-            incomingUpgrade:"",
-            productedAmount:am
-        })
+        .catch(err=>console.log(err))
+        .finally(
             document.getElementById("finishVillageUpgrade").style.display="none"
-
+        )
+        return
     }
-    style=()=>{
+        style=()=>{
         let {hour,minute,sec}=this.state
         return{
             margin:'5px auto',

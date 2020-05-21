@@ -256,7 +256,7 @@ export class CountingHouse extends Component {
 
             ]
         ],
-        times:['5:6','6:48','8:30','10:12','11:54','15:18','18:42','23:48','30:36','37:24',
+        times:['0:5','6:48','8:30','10:12','11:54','15:18','18:42','23:48','30:36','37:24',
                '47:36','59:30','1:14:0','1:33:30','1:55:36','2:24:30','3:1:54','3:46:6','4:43:54','5:53:36',
                '7:21:0','7:43:30','11:31:54','14:23:36','17:59:30'],
         selected:0,
@@ -293,7 +293,6 @@ export class CountingHouse extends Component {
             }
         })
         if(!a){
-            console.log(prevProps.upgrades,this.props.upgrades)
             let capacity=100
             let prod=120
             let upgradeLevel=0
@@ -309,7 +308,6 @@ export class CountingHouse extends Component {
                         prod+=this.props.upgrades[index]*type.amountOfUpgrade[ind]
                     }
                 })
-                console.log(this.state.upgradeTypes)
             })
             this.setState({upgradeTypes:newUpgrades,prod:prod,capacity:capacity,upgradeLevel:upgradeLevel})
         } else {
@@ -395,7 +393,7 @@ selectedUpgrade=(event)=>{                  /* Selected upgrade */
 }
 
 clock=(event)=>{                               /* Start counting upgrade */
-    this.upgradeInterval = setInterval(() => {
+    this.upgradeVillageInterval = setInterval(() => {
         const { sec, minute,hour } = this.state
         if (sec > 0) {
             this.setState(({ sec }) => ({
@@ -418,7 +416,7 @@ clock=(event)=>{                               /* Start counting upgrade */
                 } else {
                     console.log(minute,sec)
                     console.log("ting")
-                    clearInterval(this.myInterval)
+                    clearInterval(this.upgradeVillageInterval)
                     document.getElementById("finishUpgrade2").style.display="inline-flex"
                     this.setState({hour:"",minute:"",sec:"",ev:event})
                 }
