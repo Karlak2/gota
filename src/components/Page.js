@@ -21,11 +21,11 @@ export class Page extends Component {
              {type:'horse',amount:0},
              {type:'iron',amount:0},
              {type:'fish',amount:0},
+             {type:'fur',amount:0},
+             {type:'smallfolk',amount:0},
              {type:'ore',amount:0},
              {type:'wood',amount:0},
-             {type:'smallfolk',amount:0},
              {type:'cloth',amount:0},
-             {type:'fur',amount:0},
              {type:'grains',amount:0}
             ],
             upgrades:[

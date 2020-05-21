@@ -274,7 +274,7 @@ export class VillageCenter extends Component {
             }
         ]
     ],
-    times:['0:1','0:1','0:1','0:1','0:1','0:1','22:0','28:0','36:0',
+    times:['6:0','8:0','10:0','12:0','14:0','18:0','22:0','28:0','36:0',
         '44:0','56:0','1:10:0','1:28:0','1:50:0','2:16:0','2:50:0','3:34:0','4:26:0','5:34:0',
         '6:56:0','8:40:0','10:50:0','13:34:0','16:56:0','21:10:0'],
     selected:0,
@@ -360,7 +360,7 @@ export class VillageCenter extends Component {
     }
     clock=(event)=>{
         this.myInterval = setInterval(() => {
-            const { sec, minute } = this.state
+            const { sec, minute,hour } = this.state
             if (sec > 0) {
                 this.setState(({ sec }) => ({
                     sec: sec - 1
@@ -372,12 +372,21 @@ export class VillageCenter extends Component {
                         minute: minute - 1,
                         sec: 59
                     }))
-                } else {
-                    console.log(minute,sec)
-                    console.log("ting")
-                    clearInterval(this.myInterval)
-                    document.getElementById("finishVillageUpgrade").style.display="inline-flex"
-                    this.setState({hour:"",minute:"",sec:"",ev:event})
+                } 
+                if(minute===0){
+                    if(hour!=0){
+                        this.setState(({ hour }) => ({
+                            hour: hour - 1,
+                            minute: 59,
+                            sec:59
+                        }))  
+                    } else {
+                        console.log(minute,sec)
+                        console.log("ting")
+                        clearInterval(this.myInterval)
+                        document.getElementById("finishVillageUpgrade").style.display="inline-flex"
+                        this.setState({hour:"",minute:"",sec:"",ev:event})
+                    }
                 }
             } 
         }, 1000)
@@ -520,7 +529,8 @@ export class VillageCenter extends Component {
                     <div id="villageproduction" className="hidden">
                         <VillageProduction finish={this.finish} 
                                             clicked={this.selectResource} 
-                                            prod={this.state.production}/>
+                                            prod={this.state.production}
+                                            storage={this.props.storage}/>
                     </div>
                 </div>
             </div>

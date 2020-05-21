@@ -33,6 +33,19 @@ export class VillageProduction extends Component {
             textAlign: "center"
         }
     }
+    screenAmount=()=>{
+        return{
+            color:'white',
+            position:'relative',
+            bottom:'24px',
+            left:'73px',
+            backgroundColor:'black',
+            padding:'3px',
+            width:'23px',
+            height:'15px',
+            textAlign:'center'
+        }
+    }
     selectResource=(y)=>{
         this.setState({clicked:y})
         this.props.clicked(y)
@@ -145,6 +158,9 @@ export class VillageProduction extends Component {
                                         width="100px"
                                         height="100px"
                                         style={{margin:"3px"}}></img>
+                                <div style={this.screenAmount()}>
+                                    {this.props.storage[act+2].amount}
+                                </div>
                             </div>
                             <div className="resNeeded">
                                 <div style={{display:'flex'}}>
@@ -164,6 +180,9 @@ export class VillageProduction extends Component {
                                         width="100px"
                                         height="100px"
                                         style={{margin:"3px"}}></img>
+                                <div style={this.screenAmount()}>
+                                    {this.props.storage[act+3].amount}
+                                </div>
                             </div>
                             <div className="resNeeded">
                             <div style={{display:'flex'}}>
@@ -186,6 +205,9 @@ export class VillageProduction extends Component {
                                         width="100px"
                                         height="100px"
                                         style={{margin:"3px"}}></img>
+                                <div style={this.screenAmount()}>
+                                    {this.props.storage[act+4].amount}
+                                </div>
                             </div>
                             <div className="resNeeded">
                             <div style={{display:'flex'}}>
@@ -205,6 +227,10 @@ export class VillageProduction extends Component {
                                         width="100px"
                                         height="100px"
                                         style={{margin:"3px"}}></img>
+                                <div style={this.screenAmount()}>
+                                    {this.props.storage[act+5].amount}
+                                </div>
+
                             </div>
                             <div className="resNeeded">
                             <div style={{display:'flex'}}>
@@ -226,6 +252,10 @@ export class VillageProduction extends Component {
                                         width="100px"
                                         height="100px"
                                         style={{margin:"3px"}}></img>
+                                <div style={this.screenAmount()}>
+                                    {this.props.storage[act+6].amount}
+                                </div>
+
                             </div>
                             <div className="resNeeded">
                             <div style={{display:'flex'}}>
@@ -245,6 +275,9 @@ export class VillageProduction extends Component {
                                         width="100px"
                                         height="100px"
                                         style={{margin:"3px"}}></img>
+                                <div style={this.screenAmount()}>
+                                    {this.props.storage[act+7].amount}
+                                </div>
                             </div>
                             <div className="resNeeded">
                             <div style={{display:'flex'}}>
@@ -266,6 +299,9 @@ export class VillageProduction extends Component {
                                         width="100px"
                                         height="100px"
                                         style={{margin:"3px"}}></img>
+                                <div style={this.screenAmount()}>
+                                    {this.props.storage[act+8].amount}
+                                </div>
                             </div>
                             <div className="resNeeded">
                             <div style={{display:'flex'}}>
@@ -285,6 +321,9 @@ export class VillageProduction extends Component {
                                         width="100px"
                                         height="100px"
                                         style={{margin:"3px"}}></img>
+                                <div style={this.screenAmount()}>
+                                    {this.props.storage[act+9].amount}
+                                </div>
                             </div>
                             <div className="resNeeded">
                             <div style={{display:'flex'}}>

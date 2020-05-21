@@ -286,10 +286,17 @@ export class CountingHouse extends Component {
         clearInterval(this.myProduction)
     }
     componentDidUpdate(prevProps,prevState){
-        if(prevProps.upgrades!==this.props.upgrades){
-            let capacity=this.state.capacity
-            let prod=this.state.prod
-            let upgradeLevel=this.state.upgradeLevel
+        let a=true
+        prevProps.upgrades.map((pr,i)=>{
+            if(pr!==this.props.upgrades[i]){
+                a=false
+            }
+        })
+        if(!a){
+            console.log(prevProps.upgrades,this.props.upgrades)
+            let capacity=100
+            let prod=120
+            let upgradeLevel=0
             let newUpgrades=this.state.upgradeTypes
             newUpgrades.map((type,index)=>{
                 type.act=this.props.upgrades[index]
@@ -305,6 +312,8 @@ export class CountingHouse extends Component {
                 console.log(this.state.upgradeTypes)
             })
             this.setState({upgradeTypes:newUpgrades,prod:prod,capacity:capacity,upgradeLevel:upgradeLevel})
+        } else {
+            return
         }
     }
     upgradeBuilding=(event)=>{
@@ -361,6 +370,7 @@ changeResource=(event)=>{
         {type:'silver',amount:event}
     ]
     this.props.changeResource(collect)
+    this.setState({silver:0})
     this.newProduction = setInterval(() => {
         if(this.state.capacity!=this.state.silver){
             this.setState(({ silver }) => ({
@@ -386,7 +396,7 @@ selectedUpgrade=(event)=>{                  /* Selected upgrade */
 
 clock=(event)=>{                               /* Start counting upgrade */
     this.upgradeInterval = setInterval(() => {
-        const { sec, minute } = this.state
+        const { sec, minute,hour } = this.state
         if (sec > 0) {
             this.setState(({ sec }) => ({
                 sec: sec - 1
@@ -399,12 +409,20 @@ clock=(event)=>{                               /* Start counting upgrade */
                     sec: 59
                 }))
             } else {
-                console.log(minute,sec)
-                console.log("ting")
-                clearInterval(this.upgradeInterval)
-                document.getElementById("finishUpgrade2").style.display="inline-flex"
-                this.setState({hour:"",minute:"",sec:"",ev:event})
-            }
+                if(hour!=0){
+                    this.setState(({ hour }) => ({
+                        hour: hour - 1,
+                        minute: 59,
+                        sec:59
+                    }))  
+                } else {
+                    console.log(minute,sec)
+                    console.log("ting")
+                    clearInterval(this.myInterval)
+                    document.getElementById("finishUpgrade2").style.display="inline-flex"
+                    this.setState({hour:"",minute:"",sec:"",ev:event})
+                }
+        }
         } 
     }, 1000)
 }
