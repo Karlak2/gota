@@ -4,7 +4,14 @@ export class Character extends Component {
     render() {
         return (
             <div className="charDisplay">
-                caracter
+                <div className="characterImage">
+
+                </div>
+                <div className='characterStats'>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
             </div>
         )
     }

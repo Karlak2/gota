@@ -2,13 +2,14 @@ import React, { Component } from 'react'
 import CountingUpgrades from './assets/CountingUpgrades'
 import CountingDetails from './assets/CountingDetails'
 import ProdSilver from './assets/ProdSilver'
+import axios from 'axios'
 
 export class CountingHouse extends Component {
     state={
         upgradeTypes:[
             {
                 name:'stackCoin',
-                act:0,
+                act:this.props.upgrades[0],
                 max:5,
                 pics:"pictures/buildings/Upgrades/Counting_House_Stacks_of_Coins_Upgrade.png",
                 head:"Stacks of coins",
@@ -17,7 +18,7 @@ export class CountingHouse extends Component {
                 amountOfUpgrade:[300]
             },{
                 name:'silverBar',
-                act:0,
+                act:this.props.upgrades[1],
                 max:10,
                 pics:"pictures/buildings/Upgrades/Counting_House_Silver_Bars_Upgrade.png",
                 head:"Silver Bars",
@@ -26,7 +27,7 @@ export class CountingHouse extends Component {
                 amountOfUpgrade:[30]
             },{
                 name:'bagsOfCoins',
-                act:0,
+                act:this.props.upgrades[2],
                 max:5,
                 pics:"pictures/buildings/Upgrades/Counting_House_Bags_of_Coins_Upgrade.png",
                 head:"Bags of Coins",
@@ -35,7 +36,7 @@ export class CountingHouse extends Component {
                 amountOfUpgrade:[600]
             },{
                 name:'moneyChests',
-                act:0,
+                act:this.props.upgrades[3],
                 max:5,
                 pics:"pictures/buildings/Upgrades/Counting_House_Money_Chests_Upgrade.png",
                 head:"Money Chests",
@@ -284,7 +285,28 @@ export class CountingHouse extends Component {
     componentWillUnmount() {
         clearInterval(this.myProduction)
     }
-
+    componentDidUpdate(prevProps,prevState){
+        if(prevProps.upgrades!==this.props.upgrades){
+            let capacity=this.state.capacity
+            let prod=this.state.prod
+            let upgradeLevel=this.state.upgradeLevel
+            let newUpgrades=this.state.upgradeTypes
+            newUpgrades.map((type,index)=>{
+                type.act=this.props.upgrades[index]
+                upgradeLevel+=this.props.upgrades[index]
+                type.typeOfUpgrade.map((upg,ind)=>{
+                    if(upg==='capacity'){
+                        capacity+=this.props.upgrades[index]*type.amountOfUpgrade[ind]
+                    }
+                    if(upg==='prod'){
+                        prod+=this.props.upgrades[index]*type.amountOfUpgrade[ind]
+                    }
+                })
+                console.log(this.state.upgradeTypes)
+            })
+            this.setState({upgradeTypes:newUpgrades,prod:prod,capacity:capacity,upgradeLevel:upgradeLevel})
+        }
+    }
     upgradeBuilding=(event)=>{
         let a=this.state;
         let newVal=a.upgradeTypes
@@ -330,11 +352,11 @@ closeTab=()=>{
 
 /* Event functions */
 
-changeResource=(event)=>{    
+changeResource=(event)=>{   
+    console.log(this.props.upgrades) 
     console.log(event)                      /* Collect silver */
     clearInterval(this.newProduction)
     clearInterval(this.myProduction)
-    this.setState({silver:0})
     let collect=[
         {type:'silver',amount:event}
     ]
@@ -391,29 +413,23 @@ finishUpgrade=()=>{                              /* Finishing upgrade on click *
     let a=this.state;
     let event=this.state.ev
     let newVal=a.upgradeTypes
-    let lev=a.upgradeLevel  
-    let cap=a.capacity
-    let pr=a.prod
-    newVal[event].act+=1
     console.log(event)
-    newVal[event].typeOfUpgrade.map((type,index)=>{
-            if(type==='capacity'){
-            cap=cap+newVal[event].amountOfUpgrade[index]
-        } else if(type==='prod'){
-            pr=pr+newVal[event].amountOfUpgrade[index]
+    if(newVal[event].act===newVal[event].max){return}
+    axios.put('http://localhost:8080/updateUpgrades',{name:document.getElementById('nickName').innerHTML,type:0,row:event})
+    .then(res=>{
+        if(res.data.suc){
+            this.setState({
+            incomingUpgrade:"",
+            minute:"",
+            sec:"",
+            hour:""})
+            this.props.change()
         }
     })
-    lev=lev+1
-    if(newVal[event].act>newVal[event].max){return}
-    this.setState({upgradeTypes:newVal,
-        upgradeLevel:lev,
-        capacity:cap,
-        prod:pr,
-        incomingUpgrade:"",
-        minute:"",
-        sec:"",
-        hour:""})
+    .catch(err=>console.log(err))
+    .finally(
         document.getElementById("finishUpgrade2").style.display="none"
+    )
     return
 }
     render() {

@@ -6,14 +6,14 @@ router.put('/',async(req,res)=>{
     const updateUser=await Gota.findOneAndUpdate({name:req.body.name},{storage:req.body.storage})
     const updatedUser=await Gota.findOne({name:req.body.name})
     console.log(updatedUser.storage)
-    res.send({storage:updatedUser.storage})
+    res.send({storage:updatedUser.storage,upgrades:updatedUser.upgrades})
 })
 
 router.post('/',async(req,res)=>{
     const findUser=await Gota.findOne({name:req.body.name})
     if(findUser){
         console.log(findUser)
-        res.send({user:findUser.name,storage:findUser.storage})
+        res.send({user:findUser.name,storage:findUser.storage,upgrades:findUser.upgrades})
     } else {
         console.log('New User')
         let st=[
@@ -30,14 +30,19 @@ router.post('/',async(req,res)=>{
             {type:'fur',amount:20},
             {type:'grains',amount:20}
         ]
+        let upgrades=[
+            [0,0,0,0],
+            [0,0,0,0,0,0]
+        ]
         const newUser= new Gota(
             {
                 name:req.body.name,
-                storage:st
+                storage:st,
+                upgrades:upgrades
             })
         await newUser.save()
         console.log(newUser)
-        res.send({user:newUser.name,storage:newUser.storage})
+        res.send({user:newUser.name,storage:newUser.storage,upgrades:newUser.upgrades})
     }
     
 })

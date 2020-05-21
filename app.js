@@ -3,14 +3,15 @@ const cors=require('cors')
 const app=express()
 const mongoose=require('mongoose')
 const dotenv=require('dotenv')
-const Gota=require('./model/Gota')
 
 dotenv.config()
 app.use(cors())
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 const updateStorage=require('./routes/updateStorage')
+const updateUpgrades=require('./routes/updateUpgrades')
 app.use('/updateStorage',updateStorage)
+app.use('/updateUpgrades',updateUpgrades)
 
 
 mongoose.connect(process.env.DB_CONNECTION,{

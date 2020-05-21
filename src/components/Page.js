@@ -10,6 +10,9 @@ export class Page extends Component {
     constructor (){
         super()
         this.state={
+            characterStats:[
+                0,0,0
+            ],
             storage:[
              /*goods*/ 
              {type:'silver',amount:0},
@@ -25,6 +28,10 @@ export class Page extends Component {
              {type:'fur',amount:0},
              {type:'grains',amount:0}
             ],
+            upgrades:[
+                [0,0,0,0],
+                [0,0,0,0,0,0]
+            ],
             updated:false,
             name:""  
         }
@@ -33,7 +40,7 @@ componentDidMount(){
     this.check=setInterval(() => {
         if(this.state.updated){
             axios.put('http://localhost:8080/updateStorage',{'storage':this.state.storage,'name':this.state.name})
-            .then(res=>this.setState({storage:res.data.storage}))
+            .then(res=>this.setState({storage:res.data.storage,upgrades:res.data.upgrades}))
             .catch(err=>{
                 console.log(err)
             })
@@ -41,15 +48,6 @@ componentDidMount(){
         }
     }, 1000)
 }
-// componentDidUpdate(prevProps,prevState){
-//     console.log(prevState.storage,this.state.storage)
-//     if(prevState.storage[0].amount!==this.state.storage[0].amount){
-//         console.log(this.state.storage[0].amount)
-//         // axios.get('http://localhost:8080/sil')
-//         // .then(res=>console.log(res))
-//         // .catch(err=>console.log(err))
-//     }
-// }
 
 loginScreen=()=>{
     return{
@@ -65,7 +63,7 @@ loginScreen=()=>{
 login=()=>{
     let nickname=document.getElementById('loginName').value
     axios.post('http://localhost:8080/updateStorage',{name:nickname})
-    .then(res=>{ this.setState({name:res.data.user,storage:res.data.storage})
+    .then(res=>{ this.setState({name:res.data.user,storage:res.data.storage,upgrades:res.data.upgrades})
     }
     ).catch((err)=>console.log(err))
     .finally(document.getElementById('loginscreen').classList.add('hidden'))
@@ -78,19 +76,26 @@ login=()=>{
             event.map(row=>{
                 if(j.type===row.type){
                     j.amount=j.amount+row.amount
-                }
-            })
+            }
         })
-        this.setState({storage:st,updated:true})
-    }
-    render() {
+    })
+    this.setState({storage:st,updated:true})
+}
+change=()=>{
+    this.setState({updated:true})
+}
+
+
+render() {
         return (
             <React.Fragment>
                 <div className="page">
                     <Head name={this.state.name} storage={this.state.storage}/>
                     <Character/>
                     <Invisible storage={this.state.storage}
-                            changeResource={this.changeResource}/>
+                            changeResource={this.changeResource}
+                            upgrades={this.state.upgrades}
+                            change={this.change}/>
                     <Bottom />
                 </div>
                 <div id="loginscreen" style={this.loginScreen()}>

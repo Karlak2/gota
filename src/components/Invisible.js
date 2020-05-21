@@ -16,10 +16,13 @@ export class Invisible extends Component {
     changeResource=(event)=>{
         this.props.changeResource(event)
     }
+    change=()=>{
+        this.props.change()
+    }
     render() {
         return (
             <div className='invisibles'>
-                <CountingHouse changeResource={this.changeResource} storage={this.props.storage}/>
+                <CountingHouse upgrades={this.props.upgrades[0]} change={this.change} changeResource={this.changeResource} storage={this.props.storage}/>
                 <Keep collect={this.collect}/>
                 <Smithy/>
                 <Market/>
