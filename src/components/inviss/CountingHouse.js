@@ -267,7 +267,7 @@ export class CountingHouse extends Component {
         hour:"",
         minute:"",
         sec:"",
-        silver:100,
+        silver:this.props.silver,
         ev:""
     }
     
@@ -277,10 +277,14 @@ export class CountingHouse extends Component {
                 this.setState(({ silver }) => ({
                     silver: silver + 1
                 })) 
+                this.count()
             } else {
                 clearInterval(this.newProduction)
             }
         }, 3600000/this.state.prod)
+    }
+    count=()=>{
+        this.props.count()
     }
     componentWillUnmount() {
         clearInterval(this.myProduction)
@@ -310,7 +314,10 @@ export class CountingHouse extends Component {
                 })
             })
             this.setState({upgradeTypes:newUpgrades,prod:prod,capacity:capacity,upgradeLevel:upgradeLevel})
-        } else {
+        } else if(this.props.silver!=this.state.silver){
+            this.setState({silver:this.props.silver})
+        }
+        else {
             return
         }
     }
@@ -360,7 +367,6 @@ closeTab=()=>{
 /* Event functions */
 
 changeResource=(event)=>{   
-    console.log(this.props.upgrades) 
     console.log(event)                      /* Collect silver */
     clearInterval(this.newProduction)
     clearInterval(this.myProduction)
@@ -374,6 +380,7 @@ changeResource=(event)=>{
             this.setState(({ silver }) => ({
                 silver: silver + 1
             })) 
+            this.props.count()
         } else {
             clearInterval(this.newProduction)
         }
@@ -449,6 +456,7 @@ finishUpgrade=()=>{                              /* Finishing upgrade on click *
     return
 }
     render() {
+        console.log(this.props.silver,"in counting")
         const {hour,minute,sec,silver,capacity,prod}=this.state
         return (
             <div className="CountingHouse hidden">

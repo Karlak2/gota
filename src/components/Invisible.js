@@ -20,10 +20,14 @@ export class Invisible extends Component {
     change=()=>{
         this.props.change()
     }
+    count=()=>{
+        this.props.count()
+    }
     render() {
+        console.log(this.props.silver,"in invisibles")
         return (
             <div className='invisibles'>
-                <CountingHouse upgrades={this.props.upgrades[0]} change={this.change} changeResource={this.changeResource} storage={this.props.storage}/>
+                <CountingHouse count={this.count} silver={this.props.silver} upgrades={this.props.upgrades[0]} change={this.change} changeResource={this.changeResource} storage={this.props.storage}/>
                 <Keep collect={this.collect}/>
                 <Smithy/>
                 <Market/>

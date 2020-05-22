@@ -10,8 +10,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 const updateStorage=require('./routes/updateStorage')
 const updateUpgrades=require('./routes/updateUpgrades')
+const silverUpdate=require('./routes/silverUpdate')
 app.use('/updateStorage',updateStorage)
 app.use('/updateUpgrades',updateUpgrades)
+app.use('/silverUpdate',silverUpdate)
 
 
 mongoose.connect(process.env.DB_CONNECTION,{

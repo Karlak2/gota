@@ -12,6 +12,10 @@ const gotaSchema=mongoose.Schema({
     upgrades:{
         type:Array,
         require:true
+    },
+    silver:{
+        type:Number,
+        require:true
     }
 })
 

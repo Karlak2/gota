@@ -13,7 +13,7 @@ router.post('/',async(req,res)=>{
     const findUser=await Gota.findOne({name:req.body.name})
     if(findUser){
         console.log(findUser)
-        res.send({user:findUser.name,storage:findUser.storage,upgrades:findUser.upgrades})
+        res.send({user:findUser.name,storage:findUser.storage,upgrades:findUser.upgrades,silver:findUser.silver})
     } else {
         console.log('New User')
         let st=[
@@ -34,15 +34,17 @@ router.post('/',async(req,res)=>{
             [0,0,0,0],
             [0,0,0,0,0,0]
         ]
+        let countingSilver=100
         const newUser= new Gota(
             {
                 name:req.body.name,
                 storage:st,
-                upgrades:upgrades
+                upgrades:upgrades,
+                silver:countingSilver
             })
         await newUser.save()
         console.log(newUser)
-        res.send({user:newUser.name,storage:newUser.storage,upgrades:newUser.upgrades})
+        res.send({user:newUser.name,storage:newUser.storage,upgrades:newUser.upgrades,silver:newUser.silver})
     }
     
 })

@@ -5,7 +5,7 @@ export class Character extends Component {
         return (
             <div className="charDisplay">
                 <div className="characterImage">
-
+                    
                 </div>
                 <div className='characterStats'>
                     <div></div>

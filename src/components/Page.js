@@ -33,7 +33,8 @@ export class Page extends Component {
                 [0,0,0,0,0,0]
             ],
             updated:false,
-            name:""  
+            name:"" ,
+            silver:0
         }
 }
 componentDidMount(){
@@ -63,19 +64,24 @@ loginScreen=()=>{
 login=()=>{
     let nickname=document.getElementById('loginName').value
     axios.post('http://localhost:8080/updateStorage',{name:nickname})
-    .then(res=>{ this.setState({name:res.data.user,storage:res.data.storage,upgrades:res.data.upgrades})
+    .then(res=>{ this.setState({name:res.data.user,storage:res.data.storage,upgrades:res.data.upgrades,silver:res.data.silver})
     }
     ).catch((err)=>console.log(err))
     .finally(document.getElementById('loginscreen').classList.add('hidden'))
 }
 
-    changeResource=(event)=>{
-        console.log(event)
-        let st=this.state.storage
-        st.map(j=>{
-            event.map(row=>{
-                if(j.type===row.type){
-                    j.amount=j.amount+row.amount
+changeResource=(event)=>{
+    console.log(event)
+    let st=this.state.storage
+    st.map(j=>{
+        event.map(row=>{
+            if(j.type===row.type){
+                j.amount=j.amount+row.amount
+                if(j.type==='silver'&&row.amount>0){
+                    console.log('Here')
+                    axios.put('http://localhost:8080/silverUpdate',{name:this.state.name,silver:0})
+                    .then(this.setState({silver:0}))
+                }
             }
         })
     })
@@ -84,10 +90,20 @@ login=()=>{
 change=()=>{
     this.setState({updated:true})
 }
-
+count=()=>{
+    if(this.state.name!=""){
+        this.setState(({ silver }) => ({
+            silver: silver + 1
+        })) 
+        console.log(this.state.silver)
+        axios.put('http://localhost:8080/silverUpdate',{name:this.state.name,silver:this.state.silver})
+        .then(res=>console.log(res.data.message))
+        .catch(err=>{console.log(err)})
+    }
+}
 
 render() {
-    console.log(this.state.storage,"in page")
+    console.log(this.state.silver,"in page")
         return (
             <React.Fragment>
                 <div className="page">
@@ -96,7 +112,9 @@ render() {
                     <Invisible storage={this.state.storage}
                             changeResource={this.changeResource}
                             upgrades={this.state.upgrades}
-                            change={this.change}/>
+                            change={this.change}
+                            silver={this.state.silver}
+                            count={this.count}/>
                     <Bottom />
                 </div>
                 <div id="loginscreen" style={this.loginScreen()}>
