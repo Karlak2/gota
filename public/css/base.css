@@ -8,6 +8,49 @@
   display: none;
 }
 
+.charDisplay {
+  margin: 20px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  border: 6px solid black;
+  width: 250px;
+  height: 147px;
+  border-radius: 20px;
+  background: #40749eab;
+}
+
+.charDisplay p {
+  color: white;
+  margin: 0 10px;
+  font-size: 1.3rem;
+  font-weight: 800;
+}
+
+.charHead {
+  background-image: url(../pictures/Btn-bg-green-glow.png);
+  background-repeat: no-repeat;
+  background-size: 1203px 71px;
+  width: 1203px;
+  height: 71px;
+  border-radius: 10px;
+  font-size: 2.4rem;
+  text-align: center;
+  color: #f9ca24;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.characterImage {
+  padding: 9px;
+  background: url(../pictures/buildings/Upgrades/Circle_Frame_-_Grey.png);
+  background-repeat: no-repeat;
+  background-size: 147px 147px;
+  width: 147px;
+  height: 147px;
+  border-radius: 50%;
+}
+
 .login {
   width: 400px;
   height: 350px;
@@ -73,27 +116,74 @@
 }
 
 .head {
+  color: white;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  padding: 5px;
-  background-color: #b8db1b;
+  padding: 1px;
+  background-color: #640008fd;
 }
 
 .head .level {
-  margin-left: 25%;
+  margin: 5px 0;
+  margin-left: 20%;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .head .silver {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  margin-left: 25%;
+  margin-left: 10%;
   padding: 10px;
 }
 
 .head .silver img {
+  margin-top: 4px;
+  background-color: #2f3640;
   padding: 2px;
+  border: 3px solid black;
+  border-radius: 50%;
+}
+
+.head .silver h3 {
+  letter-spacing: 3px;
+  padding: 4px 0;
+  width: 100px;
+  margin: 7px -5px;
+  text-align: center;
+  border: 4px solid black;
+  color: white;
+  background-color: #1e272e;
+  border-radius: 10px;
+}
+
+.head .gold {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  margin-left: 10%;
+  padding: 10px;
+}
+
+.head .gold img {
+  margin-top: 4px;
+  background-color: #2f3640;
+  padding: 2px;
+  border: 3px solid black;
+  border-radius: 50%;
+}
+
+.head .gold h3 {
+  padding: 4px 0;
+  width: 100px;
+  margin: 7px -5px;
+  text-align: center;
+  border: 4px solid black;
+  color: white;
+  background-color: #1e272e;
+  border-radius: 10px;
 }
 
 .head .progress {
@@ -101,11 +191,13 @@
   font-size: 1.2rem;
   font-weight: 700;
   border: 2px solid yellow;
+  border-radius: 10px;
 }
 
 .head .progress .progress-bar {
   text-align: center;
-  background-color: #6e6efc;
+  background-color: yellow;
+  color: #546de5;
 }
 
 .head .charDisplay {
@@ -145,15 +237,6 @@
   border: 5px solid brown;
 }
 
-.invisibles {
-  position: absolute;
-  z-index: 5;
-  top: 50%;
-  left: 50%;
-  -webkit-transform: translate(-50%, -50%);
-          transform: translate(-50%, -50%);
-}
-
 .selectMode {
   position: absolute;
   top: -30px;
@@ -172,6 +255,23 @@
   border: 1px solid black;
   padding: 10px;
   margin: 0px 13px;
+}
+
+.InvisibleTemp {
+  margin-top: -272px;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  background-color: #00000052;
+}
+
+.InvisibleTemp .countCss {
+  position: relative;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
 }
 
 .countCss {
@@ -248,7 +348,7 @@
   left: 15px;
   top: 15px;
   background: none;
-  background-color: black;
+  background-color: #002405;
   border-radius: 10px;
   color: white;
   width: 200px;
@@ -522,6 +622,73 @@
 .countCss .buildingBottom .upgradeDetails .upgradeText .headText {
   text-transform: uppercase;
   color: yellow;
+}
+
+.countCss .selectCharacter {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  width: 1080px;
+  text-align: center;
+  background-color: #171a1b;
+  padding: 10px 0;
+  padding-left: 120px;
+}
+
+.countCss .selectCharacter div {
+  cursor: pointer;
+  margin: 0 20px;
+  padding: 3px;
+  border: 1px solid #f6e58d;
+  border-radius: 15px;
+  background-color: #2d3436;
+}
+
+.countCss .selectCharacter p {
+  color: #f6e58d;
+  padding: 8px;
+  font-size: 1rem;
+  text-transform: uppercase;
+}
+
+.countCss .template {
+  height: 592px;
+  padding: 20px;
+}
+
+.countCss .template .eq-main {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  margin: 40px;
+  border: 2px solid #f6e58d;
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.countCss .template .eq-main p {
+  color: white;
+  text-align: left;
+  font-size: 1.5rem;
+  margin: 0 10px;
+}
+
+.countCss .template .eq-main .eqdescription {
+  background-color: black;
+  padding: 15px;
+  border-radius: 10px;
+}
+
+.countCss .template .eq-main hr {
+  margin: 10px 5px;
+}
+
+.countCss .template .eq-main .bonus {
+  margin-bottom: 50px;
+}
+
+.countCss .template .equips img {
+  margin: 15px;
 }
 
 .addIcon {

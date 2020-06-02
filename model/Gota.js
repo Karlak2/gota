@@ -13,6 +13,10 @@ const gotaSchema=mongoose.Schema({
         type:Array,
         require:true
     },
+    timers:{
+        type:Array,
+        require:true
+    },
     silver:{
         type:Number,
         require:true

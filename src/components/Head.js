@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Bar from './Bar';
 import Name from './Name';
 import Silver from './Silver';
+import Gold from './Gold';
 
 
 class Head extends Component {
@@ -14,6 +15,7 @@ class Head extends Component {
                 <Name name={this.props.name}/>
                 <Bar prog={this.state.progress}/>
                 <Silver storage={this.props.storage}/>
+                <Gold storage={this.props.storage}/>
             </div>
          );
     }

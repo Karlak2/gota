@@ -36,9 +36,13 @@ export class Buildings extends Component {
     onEvent=(event)=>{
         this.setState({actShowed:event})
     }
+    closeAnother=()=>{
+        document.getElementsByClassName('Storage')[0].classList.remove('hidden')
+        document.getElementsByClassName('Storage')[0].classList.add('hidden')
+    }
     render() {
         return(
-            <div className='buildings'>
+            <div onClick={()=>this.closeAnother()} className='buildings'>
                 {this.state.buildingNames.map(build=>{
                     return <Building 
                     key={build.id} 
@@ -46,6 +50,8 @@ export class Buildings extends Component {
                     source={build.source}
                     actShowed={this.state.actShowed}
                     onChange={this.onEvent.bind(this)}
+                    upgrades={this.props.upgrades}
+                    timers={this.props.timers}
                     ></Building>
                 })}
             </div>

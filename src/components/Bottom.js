@@ -5,7 +5,7 @@ export class Bottom extends Component {
     render() {
         return (
             <div className="bottom">
-                <Buildings />
+                <Buildings upgrades={this.props.upgrades} timers={this.props.timers}/>
             </div>
         )
     }

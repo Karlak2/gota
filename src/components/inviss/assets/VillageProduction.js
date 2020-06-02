@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import axios from 'axios'
 
 export class VillageProduction extends Component {
     state={
@@ -20,6 +21,7 @@ export class VillageProduction extends Component {
         actfirst:0,
         clicked:0,
         produce:"",
+        hour:"",
         minute:"",
         sec:"",
         ev:""
@@ -46,13 +48,47 @@ export class VillageProduction extends Component {
             textAlign:'center'
         }
     }
+    componentDidUpdate(prevProps,prevState){
+        if(this.props.name!=prevProps.name){
+            let hour,minute,sec,ev,produce=""
+            if(this.props.timers.timer[1]){
+                let delta=this.props.timers.time[1]-Math.floor(Date.now()/1000)
+                if(delta>=0){
+                    hour=Math.floor(delta/3600)
+                    minute=Math.floor((delta-3600*hour)/60)
+                    sec=delta-3600*hour-60*minute
+                    ev=produce=this.props.timers.prod
+                    document.getElementById("finishVillageProd").style.display="none"                   
+                } else{
+                    hour=""
+                    minute=""
+                    sec=""
+                    ev=produce=this.props.timers.prod
+                    document.getElementById("finishVillageProd").style.display="inline-flex"
+                }
+            } else {
+                hour=minute=sec=ev=""
+                document.getElementById("finishVillageProd").style.display="none"
+            }    
+            if(hour>0||minute>0||sec>0){
+                this.clock(this.props.timers.prod)
+            }
+            this.setState({
+                hour:hour,
+                minute:minute,
+                sec:sec,
+                ev:ev,
+                produce:produce,
+            })
+        }
+    }
     selectResource=(y)=>{
         this.setState({clicked:y})
         this.props.clicked(y)
     }
     canProd=(x)=>{
         return{
-            backgroundImage:this.props.prod[x].required==="" ? "linear-gradient(rgb(7, 190, 1), rgb(5, 80, 1))":'',
+            backgroundImage:this.props.prod[x].required==="" ? "linear-gradient(rgb(26, 121, 23), rgb(4, 53, 1))":'',
             border:x===this.state.clicked?"3px solid white":""
         }
     }
@@ -68,6 +104,13 @@ export class VillageProduction extends Component {
             width:'100%',
             textAlign:'center',
             marginTop:"50px",
+        }
+    }
+    pstyle=()=>{
+        return{
+            fontSize:'1.3rem',
+            color:'white',
+            display:this.state.minute===""?'none':''
         }
     }
     up=()=>{
@@ -91,59 +134,90 @@ export class VillageProduction extends Component {
         }
     }
     startProduce=(z)=>{
-        const {minute,sec}=this.props.prod[z].prodTime
-        this.setState({produce:z,minute:minute,sec:sec,ev:z})
-        this.clock(z)
+        const {hour,minute,sec}=this.props.prod[z].prodTime
+        this.setState({produce:z,hour:hour,minute:minute,sec:sec,ev:z})
+        let time=hour*3600+minute*60+sec+Math.floor(Date.now()/1000)
+        axios.put('http://localhost:8080/timersUpdate',{
+            data:{
+                name:document.getElementById('nickName').innerHTML,
+                type:'production',
+                building:'VillageCenter',
+                timer:true,
+                time:time,
+                upgrade:["",0],
+                prod:z
+            }
+        }).then(res=>{
+            this.clock(z)
+        })
+    
     }
     clock=(z)=>{
         console.log(z)
         this.prodInterval = setInterval(() => {
-            console.log(this.state.minute,this.state.sec)
-            const { minute, sec } = this.state
-            if (sec != 0) {
+            const { sec, minute,hour } = this.state
+            console.log(sec, minute,hour)
+            if (sec > 0) {
                 this.setState(({ sec }) => ({
                     sec: sec - 1
                 }))
-            }
-            if (sec === 0) {
+            } else {
                 if (minute != 0) {
                     this.setState(({ minute }) => ({
                         minute: minute - 1,
                         sec: 59
                     }))
-                } else {
-                    console.log(minute,sec)
-                    console.log("ting")
-                    clearInterval(this.prodInterval)
-                    document.getElementById("finishVillageProd").style.display="inline-flex"
-                    this.setState({minute:"",sec:""})
+                } else{
+                    if(hour!=0){
+                        this.setState(({ hour }) => ({
+                            hour: hour - 1,
+                            minute: 59,
+                            sec:59
+                        }))  
+                    } else {
+                        console.log(minute,sec)
+                        console.log("ting")
+                        clearInterval(this.prodInterval)
+                        document.getElementById("finishVillageProd").style.display="inline-flex"
+                        this.setState({hour:"",minute:"",sec:"",ev:z})
+                    }
                 }
             } 
+
         }, 1000)
     }
     finishProduction=()=>{
         let event=this.state.ev
-        this.props.finish(event)
         this.setState({ev:"",produce:""})
         document.getElementById("finishVillageProd").style.display="none"
+        this.props.finish(event)
+        axios.put('http://localhost:8080/timersUpdate',{
+            data:{
+                name:document.getElementById('nickName').innerHTML,
+                type:'production',
+                building:'VillageCenter',
+                timer:false,
+                time:0,
+                prod:""
+            }
+        })
     }
 
-    pstyle=()=>{
-        return{
-            fontSize:'1.3rem',
-            color:'white',
-            display:this.state.produce===""||this.state.minute===""?'none':''
-        }
-    }
     render() {
-        console.log(this.props.storage)
         let act=this.state.actfirst
         let clicked=this.state.clicked
+        let {hour,minute,sec}=this.state
+        let comp=0;
+        this.props.prod.map(resou=>{
+            if(resou.required===""){
+                comp=comp+1
+            }
+        })
         return (
             <div className="villageProd">
                 <div className="productable">
                     <div className="prodHead">
-                        <p className="completed">Completed:{this.state.completed}/10</p>
+                        <p className="completed">Completed:{comp}/10</p>
                         <button id="villageUp" onClick={this.up}
                                 className="upButton hidden">
                                 <img 
@@ -351,9 +425,9 @@ export class VillageProduction extends Component {
                 <div className="singleProduct">
                     <div style={this.counter()}>
                         <p id="prodRemaining" style={this.pstyle()}>
-        {this.state.resources[this.state.produce]} Remaining time:{this.state.minute}m {this.state.sec}s
+        {this.state.resources[this.state.produce]} Remaining time:{hour}h {minute}m {sec}s
                         </p>
-                        <button onClick={this.finishProduction} id="finishVillageProd" style={{margin:'0 auto',cursor:'pointer'}} className="finishButton hidden">Finish</button>
+                        <button onClick={this.finishProduction} id="finishVillageProd" style={{margin:'0 auto',cursor:'pointer'}} className="finishButton">Finish</button>
                     </div>
                     <div className="resourceDetails">
                         <p style={{

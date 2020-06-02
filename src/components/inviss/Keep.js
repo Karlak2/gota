@@ -6,7 +6,7 @@ export class Keep extends Component {
     }
     render() {
         return (
-            <div className="Keep hidden">
+            <div className="Keep InvisibleTemp hidden">
                 <div className="countCss">
                     <div onClick={this.closeTab} className="closeButton" >X</div>
                     <div className="buildingTop">

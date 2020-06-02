@@ -1,3 +1,5 @@
+$imageSize:147px;
+
 *{
     margin:0;
     padding:0;
@@ -6,6 +8,46 @@
 
 .hidden{
     display: none;
+}
+.charDisplay{
+    margin:20px;
+    display: flex;
+    border:6px solid black;
+    width:250px;
+    height:$imageSize;
+    border-radius:20px;
+    background:#40749eab;
+    p{
+        color:white;
+        margin: 0 10px;
+        font-size:1.3rem;
+        font-weight: 800;
+    }
+}
+
+
+.charHead{
+    background-image: url(../pictures/Btn-bg-green-glow.png);
+    background-repeat: no-repeat;
+    background-size: 1203px 71px;
+    width:1203px;
+    height: 71px;
+    border-radius: 10px;
+    font-size:2.4rem;
+    text-align: center;
+    color:#f9ca24;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.characterImage{
+    padding:9px;
+    background:url(../pictures/buildings/Upgrades/Circle_Frame_-_Grey.png);
+    background-repeat: no-repeat;
+    background-size: $imageSize $imageSize;
+    width:$imageSize;
+    height:$imageSize;
+    border-radius: 50%;
 }
 .login{
     width:400px;
@@ -54,18 +96,59 @@
 }
 
 .head{
+    color:white;
     display:flex;
-    padding:5px;
-    background-color: #b8db1b;
+    padding:1px;
+    background-color: #640008fd;
     .level{
-        margin-left:25%;
+        margin:5px 0;
+        margin-left:20%;
+        text-transform: uppercase;
+        letter-spacing: 1px;
     }
     .silver{
         display: flex;
-        margin-left:25%;
+        margin-left:10%;
         padding:10px;
         img{
+            margin-top:4px;
+            background-color:#2f3640 ;
             padding:2px;
+            border:3px solid black;
+            border-radius: 50%;
+        }
+        h3{
+            letter-spacing: 3px;
+            padding:4px 0;
+            width:100px;
+            margin:7px -5px;
+            text-align: center;
+            border:4px solid black;
+            color: white;
+            background-color:#1e272e ;
+            border-radius: 10px;
+        }
+    }
+    .gold{
+        display: flex;
+        margin-left:10%;
+        padding:10px;
+        img{
+            margin-top:4px;
+            background-color:#2f3640 ;
+            padding:2px;
+            border:3px solid black;
+            border-radius: 50%;
+        }
+        h3{
+            padding:4px 0;
+            width:100px;
+            margin:7px -5px;
+            text-align: center;
+            border:4px solid black;
+            color: white;
+            background-color:#1e272e ;
+            border-radius: 10px;
         }
     }
 
@@ -74,9 +157,11 @@
         font-size: 1.2rem;
         font-weight: 700;
         border: 2px solid yellow;
+        border-radius: 10px;
         .progress-bar{
             text-align: center;
-            background-color:rgb(110, 110, 252);
+            background-color:yellow;
+            color:#546de5;
 
         }
     }
@@ -114,14 +199,6 @@
 }
 
 
-.invisibles{
-    position: absolute;
-    z-index:5;
-    top:50%;
-    left:50%;
-    transform: translate(-50%,-50%);
-
-}
     .selectMode{
         position: absolute;
         top:-30px;
@@ -138,6 +215,20 @@
             margin: 0px 13px;
         }
     }
+    .InvisibleTemp{
+        margin-top: -272px;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+        background-color:#00000052;
+        .countCss{
+            position: relative;
+            top:50%;
+            left:50%;
+            transform: translate(-50%,-50%);
+        }
+    }    
 
 .countCss{
     border:2px solid black;
@@ -192,7 +283,7 @@
                         left: 15px;
                         top: 15px;
                         background: none;
-                        background-color: black;
+                        background-color: rgb(0, 36, 5);
                         border-radius: 10px;
                         color: white;
                         width: 200px;
@@ -416,6 +507,64 @@
                 }
             }
         }
+    .selectCharacter{
+        display: flex;
+        width:1080px;
+        text-align: center;
+        background-color: #171a1b;
+        padding:10px 0;
+        padding-left:120px;
+        div{
+            cursor: pointer;
+            margin:0 20px;
+            padding:3px;
+            border:1px solid #f6e58d;
+            border-radius: 15px;
+            background-color: #2d3436;
+        }
+        p{
+            color:#f6e58d;
+            padding:8px;
+            font-size: 1rem;
+            text-transform: uppercase;
+
+        }
+    }
+    .template{
+        height:592px;
+        padding:20px;
+        .eq-main{
+            display: flex;
+            margin:40px;
+            border:2px solid #f6e58d;
+            border-radius: 10px;
+            padding:20px;
+            p{
+                color:white;
+                text-align: left;
+                font-size: 1.5rem;
+                margin: 0 10px;
+            }
+            .eqdescription{
+                background-color: black;
+                padding:15px;
+                border-radius: 10px;
+                }
+                hr{
+                    margin:10px 5px;
+                }
+                .bonus{
+                    margin-bottom: 50px;
+                }
+            }
+            .equips {
+                img{
+                margin:15px;
+                }
+
+        }
+
+    }
 
 }
 .addIcon {

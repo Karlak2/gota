@@ -11,6 +11,8 @@ import Smithy from '../components/inviss/Smithy';
 import Treasury from '../components/inviss/Treasury';
 import VillageCenter from '../components/inviss/VillageCenter';
 import Workshop from '../components/inviss/Workshop';
+import Storage from '../components/inviss/Storage'
+
 
 export class Invisible extends Component {
     changeResource=(event)=>{
@@ -24,12 +26,13 @@ export class Invisible extends Component {
         this.props.count()
     }
     render() {
-        console.log(this.props.silver,"in invisibles")
         return (
-            <div className='invisibles'>
-                <CountingHouse count={this.count} silver={this.props.silver} upgrades={this.props.upgrades[0]} change={this.change} changeResource={this.changeResource} storage={this.props.storage}/>
+            <React.Fragment>
+                <Storage title={this.props.title} stats={this.props.stats} name={this.props.name}/>
+                <CountingHouse silver={this.props.silver} count={this.count} timers={this.props.timers[0]} upgrades={this.props.upgrades[0]} change={this.change} changeResource={this.changeResource} storage={this.props.storage}/>
                 <Keep collect={this.collect}/>
                 <Smithy/>
+                <VillageCenter name={this.props.name} timers={this.props.timers[3]} upgrades={this.props.upgrades[3]} change={this.change} changeResource={this.changeResource} purchase={this.purchase} storage={this.props.storage}/>
                 <Market/>
                 <Embassy/>
                 <Godswood/>
@@ -37,9 +40,8 @@ export class Invisible extends Component {
                 <RhllorTemple/>
                 <Sept/>
                 <Treasury/>
-                <VillageCenter upgrades={this.props.upgrades[1]} change={this.change} changeResource={this.changeResource} purchase={this.purchase} storage={this.props.storage}/>
                 <Workshop />
-            </div>
+            </React.Fragment>
         )
     }
 }

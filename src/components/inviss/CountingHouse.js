@@ -256,7 +256,7 @@ export class CountingHouse extends Component {
 
             ]
         ],
-        times:['0:5','6:48','8:30','10:12','11:54','15:18','18:42','23:48','30:36','37:24',
+        times:['0:5','0:5','8:30','10:12','0:15','15:18','18:42','23:48','30:36','37:24',
                '47:36','59:30','1:14:0','1:33:30','1:55:36','2:24:30','3:1:54','3:46:6','4:43:54','5:53:36',
                '7:21:0','7:43:30','11:31:54','14:23:36','17:59:30'],
         selected:0,
@@ -268,7 +268,9 @@ export class CountingHouse extends Component {
         minute:"",
         sec:"",
         silver:this.props.silver,
-        ev:""
+        ev:"",
+        inProduction:false,
+        inUpgrade:false
     }
     
     componentDidMount() {
@@ -277,47 +279,86 @@ export class CountingHouse extends Component {
                 this.setState(({ silver }) => ({
                     silver: silver + 1
                 })) 
-                this.count()
+                this.props.count()
             } else {
                 clearInterval(this.newProduction)
             }
         }, 3600000/this.state.prod)
     }
-    count=()=>{
-        this.props.count()
-    }
     componentWillUnmount() {
         clearInterval(this.myProduction)
     }
     componentDidUpdate(prevProps,prevState){
-        let a=true
-        prevProps.upgrades.map((pr,i)=>{
-            if(pr!==this.props.upgrades[i]){
-                a=false
-            }
-        })
-        if(!a){
+        console.log(prevProps,this.props,"properties")
+        console.log(prevState,this.state,"states")
+        if(this.props.timers.time[1]!=prevProps.timers.time[1]){
             let capacity=100
             let prod=120
             let upgradeLevel=0
             let newUpgrades=this.state.upgradeTypes
-            newUpgrades.map((type,index)=>{
-                type.act=this.props.upgrades[index]
-                upgradeLevel+=this.props.upgrades[index]
-                type.typeOfUpgrade.map((upg,ind)=>{
-                    if(upg==='capacity'){
-                        capacity+=this.props.upgrades[index]*type.amountOfUpgrade[ind]
-                    }
-                    if(upg==='prod'){
-                        prod+=this.props.upgrades[index]*type.amountOfUpgrade[ind]
-                    }
+            let hour,minute,sec
+                newUpgrades.map((type,index)=>{
+                    type.act=this.props.upgrades[index]
+                    upgradeLevel+=this.props.upgrades[index]
+                    type.typeOfUpgrade.map((upg,ind)=>{
+                        if(upg==='capacity'){
+                            capacity+=this.props.upgrades[index]*type.amountOfUpgrade[ind]
+                        }
+                        if(upg==='prod'){
+                            prod+=this.props.upgrades[index]*type.amountOfUpgrade[ind]
+                        }
+                    })
                 })
-            })
-            this.setState({upgradeTypes:newUpgrades,prod:prod,capacity:capacity,upgradeLevel:upgradeLevel})
-        } else if(this.props.silver!=this.state.silver){
-            this.setState({silver:this.props.silver})
+                this.setState({prod:prod,capacity:capacity})
+            if(this.props.timers.timer[0]!=this.state.inUpgrade){
+                console.log("egyaltalan tortenik valami")
+                if(this.props.timers.time[0]===0){
+                    hour=minute=sec=""
+                    console.log('elso')
+                } else {
+                    console.log('masodik')
+
+                    let delta=this.props.timers.time[0]-Math.floor(Date.now()/1000)
+                    if(delta>=0){
+                        hour=Math.floor(delta/3600)
+                        minute=Math.floor((delta-3600*hour)/60)
+                        sec=delta-3600*hour-60*minute
+                    } else{
+                        console.log('harmadik')
+                        hour=minute=sec=""
+                        document.getElementById("finishUpgrade2").style.display="inline-flex"
+                    }
+                }
+                this.setState({
+                    inUpgrade:this.props.timers.timer[0],
+                    incomingUpgrade:this.props.timers.upgrade[0],
+                    ev:this.props.timers.upgrade[1],
+                    hour:hour,
+                    minute:minute,
+                    sec:sec
+                })
+                if(hour>0||minute>0||sec>0){
+                    this.clock(this.props.timers.upgrade[1])
+                }
+    
+            }  
+            console.log(this.props.timers.time[1],Math.floor(Date.now()/1000))
+            if(this.props.timers.time[1]<Math.floor(Date.now()/1000)){
+                this.setState({silver:capacity})
+            } else {
+                console.log(this.state.capacity,this.state.prod,"capacity, and prod reload")
+                let newSilver=capacity-Math.floor((this.props.timers.time[1]+1-Math.floor(Date.now()/1000))*prod/3600)
+                console.log(newSilver,this.props.timers.time[1],Math.floor(Date.now()/1000),
+                Math.floor((this.props.timers.time[1]-Math.floor(Date.now()/1000))*prod/3600)
+                )
+                this.setState({
+                    silver:newSilver,
+                    upgradeTypes:newUpgrades,
+                    prod:prod,capacity:capacity,
+                    upgradeLevel:upgradeLevel})
+            }
         }
-        else {
+         else {
             return
         }
     }
@@ -341,12 +382,24 @@ export class CountingHouse extends Component {
             minute=time[1]
             sec=time[2]
         }
-        this.setState({incomingUpgrade:newVal[event].head,
-                        hour:hour,
-                        minute:minute,
-                    sec:sec})
-        console.log(time)
-        this.clock(event)
+        this.setState({
+            incomingUpgrade:newVal[event].head,
+            hour:hour,
+            minute:minute,
+            sec:sec
+        })
+        let newTime=Math.floor(Date.now()/1000)+3600*Number(hour)+60*Number(minute)+Number(sec)
+        axios.put('http://localhost:8080/timersUpdate',{
+            data:{
+                name:document.getElementById('nickName').innerHTML,
+                type:'upgrade',
+                building:'CountingHouse',
+                timer:true,
+                time:newTime,
+                upgrade:[newVal[event].head,event]
+            }
+        }).then(res=>this.clock(event))
+        
     }
 /*Style functions */
 
@@ -367,6 +420,7 @@ closeTab=()=>{
 /* Event functions */
 
 changeResource=(event)=>{   
+    console.log(this.props.upgrades) 
     console.log(event)                      /* Collect silver */
     clearInterval(this.newProduction)
     clearInterval(this.myProduction)
@@ -375,6 +429,19 @@ changeResource=(event)=>{
     ]
     this.props.changeResource(collect)
     this.setState({silver:0})
+    let fulltime=Math.floor((Number(this.state.capacity)/Number(this.state.prod))*3600)+Math.floor(Date.now()/1000)
+    console.log(fulltime)
+    axios.put('http://localhost:8080/timersUpdate',{
+        data:{
+            name:document.getElementById('nickName').innerHTML,
+            type:'production',
+            building:'CountingHouse',
+            timer:true,
+            time:fulltime,
+        }
+    }).then(res=>{
+        this.props.change()
+    })
     this.newProduction = setInterval(() => {
         if(this.state.capacity!=this.state.silver){
             this.setState(({ silver }) => ({
@@ -453,13 +520,47 @@ finishUpgrade=()=>{                              /* Finishing upgrade on click *
     .finally(
         document.getElementById("finishUpgrade2").style.display="none"
     )
+    axios.put('http://localhost:8080/timersUpdate',{
+        data:{
+            name:document.getElementById('nickName').innerHTML,
+            type:'upgrade',
+            building:'CountingHouse',
+            timer:false,
+            time:0,
+            upgrade:["",0]
+        }
+    }).then(res=>{
+        this.setState({inUpgrade:false})
+        let pr=this.state.prod
+        let cap=this.state.capacity
+        newVal[event].typeOfUpgrade.map((upg,ind)=>{
+            if(upg==='prod'){
+                pr=pr+newVal[event].amountOfUpgrade[ind]
+            } else if(upg==="capacity"){
+                cap=cap+newVal[event].amountOfUpgrade[ind]
+            }
+        })
+        console.log(pr,cap,'production and capacity')
+        let newTime=Math.floor((Number(cap-this.state.silver)/Number(pr))*3600)+Math.floor(Date.now()/1000)
+        axios.put('http://localhost:8080/timersUpdate',{
+            data:{
+                name:document.getElementById('nickName').innerHTML,
+                type:'production',
+                building:'CountingHouse',
+                timer:true,
+                time:newTime,
+            }
+        }).then(res=>{
+            this.props.change()
+        })
+    
+    })
     return
 }
     render() {
-        console.log(this.props.silver,"in counting")
         const {hour,minute,sec,silver,capacity,prod}=this.state
         return (
-            <div className="CountingHouse hidden">
+            <div className="CountingHouse InvisibleTemp hidden">
                 <div className="countCss">
                     <div onClick={this.closeTab} className="closeButton" >X</div>
                     <div className="buildingTop">
@@ -486,7 +587,7 @@ finishUpgrade=()=>{                              /* Finishing upgrade on click *
                                  alt="upgrade"
                                  width="25px"
                                  height="25px"></img>
-                            <p>{this.state.incomingUpgrade}  {`${hour}h `}{`${minute}m `}{ sec < 10 ? `0${ sec }s` : `${sec}s` }</p>
+                            <p>{this.state.incomingUpgrade}  {hour===0?``:`${hour}h `}{`${minute}m `}{ sec < 10 ? `0${ sec }s` : `${sec}s` }</p>
                         </div>
                         <div id="finishUpgrade2" style={{display:"none"}}>
                             <p style={{color:"white",margin:"6px"}}>{this.state.incomingUpgrade}</p>

@@ -11,7 +11,7 @@ export class Bar extends Component {
         return (
             <div className="level">
                 <h3>Level:{this.state.level}</h3>
-                <ProgressBar style={{width:'60px'}} now={this.state.bar} label={`${this.state.bar}%`}/>
+                <ProgressBar style={{width:'80px',margin:'5px 0',border:'2px solid yellow'}} now={this.state.bar} label={`${this.state.bar}%`}/>
             </div>
         );
     }

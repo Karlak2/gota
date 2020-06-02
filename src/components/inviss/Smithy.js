@@ -6,7 +6,7 @@ export class Smithy extends Component {
     }
     render() {
         return (
-            <div className="Smithy hidden">
+            <div className="Smithy InvisibleTemp hidden">
                 <div className="countCss">
                     <div onClick={this.closeTab} className="closeButton" >X</div>
                     <div className="buildingTop">

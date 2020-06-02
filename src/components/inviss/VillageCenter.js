@@ -275,9 +275,52 @@ export class VillageCenter extends Component {
             }
         ]
     ],
-    times:['6:0','8:0','10:0','12:0','14:0','18:0','22:0','28:0','36:0',
+    times:['0:20','0:20','0:20','12:0','14:0','18:0','22:0','28:0','36:0',
         '44:0','56:0','1:10:0','1:28:0','1:50:0','2:16:0','2:50:0','3:34:0','4:26:0','5:34:0',
         '6:56:0','8:40:0','10:50:0','13:34:0','16:56:0','21:10:0'],
+        production:[
+            {
+                resource:'stone',
+                prodTime:{hour:0,minute:20,sec:0},
+                required:""
+            },{
+                resource:'horse',
+                prodTime:{hour:0,minute:20,sec:0},
+                required:"Common Pasture"
+             },{
+                resource:'iron',
+                prodTime:{hour:0,minute:20,sec:0},
+                required:""
+             },{
+                resource:'fish',
+                prodTime:{hour:0,minute:20,sec:0},
+                required:""
+             },{
+                resource:'fur',
+                prodTime:{hour:0,minute:20,sec:0},
+                required:""
+             },{
+                resource:'smallfolk',
+                prodTime:{hour:0,minute:20,sec:0},
+                required:""
+             },{
+                resource:'ore',
+                prodTime:{hour:0,minute:20,sec:0},
+                required:"Mill"
+             },{
+                resource:'wood',
+                prodTime:{hour:0,minute:20,sec:0},
+                required:"Storehouse"
+             },{
+                resource:'cloth',
+                prodTime:{hour:0,minute:20,sec:0},
+                required:"Tannery"
+             },{
+                resource:'grains',
+                prodTime:{hour:0,minute:20,sec:0},
+                required:"Bakery"
+             }
+        ],        
     selected:0,
     upgradeLevel:0,
     incomingUpgrade:"",
@@ -287,62 +330,14 @@ export class VillageCenter extends Component {
     ev:"",
     buildingState:"idle",
     productedAmount:1,
-    production:[
-        {
-            resource:'stone',
-            prodTime:{minute:20,sec:0},
-            required:""
-        },{
-            resource:'horse',
-            prodTime:{minute:20,sec:0},
-            required:"Common Pasture"
-         },{
-            resource:'iron',
-            prodTime:{minute:20,sec:0},
-            required:""
-         },{
-            resource:'fish',
-            prodTime:{minute:20,sec:0},
-            required:""
-         },{
-            resource:'fur',
-            prodTime:{minute:20,sec:0},
-            required:""
-         },{
-            resource:'smallfolk',
-            prodTime:{minute:20,sec:0},
-            required:""
-         },{
-            resource:'ore',
-            prodTime:{minute:20,sec:0},
-            required:"Mill"
-         },{
-            resource:'wood',
-            prodTime:{minute:20,sec:0},
-            required:"Storehouse"
-         },{
-            resource:'cloth',
-            prodTime:{minute:20,sec:0},
-            required:"Tannery"
-         },{
-            resource:'grains',
-            prodTime:{minute:20,sec:0},
-            required:"Bakery"
-         }
-    ],
-    selectedResource:""
+    selectedResource:"",
+    inProduction:false,
+    inUpgrade:false
     }
 
     componentDidUpdate(prevProps,prevState){
-        let a=true
-        prevProps.upgrades.map((pr,i)=>{
-            if(pr!==this.props.upgrades[i]){
-                a=false
-            }
-        })
-        if(!a){
+        if(prevProps.name!=this.props.name){
             console.log(prevProps.upgrades,this.props.upgrades)
-            console.log(this.state.production.filter(ind=>ind.resource==='stone'))
             let cur=this.state.production
             let upgradeLevel=0
             let newUpgrades=this.state.upgradeTypes
@@ -355,7 +350,6 @@ export class VillageCenter extends Component {
                     if(upg==='enable'&&type.act>0){
                         cur.map((row,ind2)=>{
                             if(row.resource===type.amountOfUpgrade[ind]){
-                                console.log(row.resource,type.amountOfUpgrade[ind])
                                 cur[ind2].required=""
                             }
                         })
@@ -371,11 +365,44 @@ export class VillageCenter extends Component {
                         am+=this.props.upgrades[index]
                     }
                 })
-                console.log(this.state.upgradeTypes)
             })
             this.setState({upgradeTypes:newUpgrades,production:cur,upgradeLevel:upgradeLevel,productedAmount:am})
-        } else {
-            console.log("No upgrades in villagecenter")
+            if(this.props.timers.timer[0]!=prevProps.timers.timer[0]){
+                let inUpgrade=false;
+                let hour,minute,sec=""
+                console.log(this.props.timers,prevProps.timers)
+                console.log(prevProps.upgrades,this.props.upgrades)
+                if(this.props.timers.timer[0]){
+                    inUpgrade=true
+                    let delta=this.props.timers.time[0]-Math.floor(Date.now()/1000)
+                    if(delta>=0){
+                        hour=Math.floor(delta/3600)
+                        minute=Math.floor((delta-3600*hour)/60)
+                        sec=delta-3600*hour-60*minute
+                    } else{
+                        hour=""
+                        minute=""
+                        sec=""
+                        document.getElementById("finishVillageUpgrade").style.display="inline-flex"
+                    }
+                } else {
+                    hour=minute=sec=""
+            }    
+            if(hour>0||minute>0||sec>0){
+                this.clock(this.props.timers.upgrade[1])
+            }
+            console.log(am,'am')
+            this.setState({
+                inUpgrade:inUpgrade,
+                ev:this.props.timers.upgrade[1],
+                incomingUpgrade:this.props.timers.upgrade[0],
+                hour:hour,
+                minute:minute,
+                sec:sec
+            })
+            
+        }
+    } else {
             return
         }
     }
@@ -406,6 +433,18 @@ export class VillageCenter extends Component {
                         minute:minute,
                     sec:sec})
         console.log(time)
+        let newTime=Math.floor(Date.now()/1000)+3600*Number(hour)+60*Number(minute)+Number(sec)
+        axios.put('http://localhost:8080/timersUpdate',{
+            data:{
+                name:document.getElementById('nickName').innerHTML,
+                type:'upgrade',
+                building:'VillageCenter',
+                timer:true,
+                time:newTime,
+                upgrade:[newVal[event].head,event]
+            }
+        })
+
         this.clock(event)
     }
     clock=(event)=>{
@@ -449,7 +488,7 @@ export class VillageCenter extends Component {
         let newVal=a.upgradeTypes
         console.log(event)
         if(newVal[event].act===newVal[event].max){return}
-        axios.put('http://localhost:8080/updateUpgrades',{name:document.getElementById('nickName').innerHTML,type:1,row:event})
+        axios.put('http://localhost:8080/updateUpgrades',{name:document.getElementById('nickName').innerHTML,type:3,row:event})
         .then(res=>{
             if(res.data.suc){
                 this.setState({
@@ -464,6 +503,51 @@ export class VillageCenter extends Component {
         .finally(
             document.getElementById("finishVillageUpgrade").style.display="none"
         )
+        axios.put('http://localhost:8080/timersUpdate',{
+        data:{
+            name:document.getElementById('nickName').innerHTML,
+            type:'upgrade',
+            building:'VillageCenter',
+            timer:false,
+            time:0,
+            upgrade:["",0]
+        }
+    }).then(res=>{
+        let lvl=this.state.upgradeLevel
+        let cur=this.state.production
+        let prodAmount=this.state.productedAmount
+        newVal[event].typeOfUpgrade.map((upg,ind)=>{
+            let speed=20
+            if(upg==='enable'){
+                cur.map((row,ind2)=>{
+                    if(row.resource===newVal[event].amountOfUpgrade[ind]){
+                        cur[ind2].required=""
+                    }
+                })
+            } else if(upg==="prodSpeed"){
+                newVal[event].amountOfUpgrade[ind].map(resou=>{
+                    cur.map((row,ind)=>{
+                        if(row.resource===resou){
+                            cur[ind].prodTime.minute=speed-1
+                        }
+                    })
+                })
+
+            } else if(upg==='prodAmount'){
+                prodAmount=prodAmount+1
+            }
+        })
+        newVal[event].act=newVal[event].act+1
+        lvl=lvl+1
+        this.setState({
+            inUpgrade:false,
+            productedAmount:prodAmount,
+            production:cur,
+            upgradeTypes:newVal,
+            upgradeLevel:lvl
+        })
+        this.props.change()
+    })
         return
     }
         style=()=>{
@@ -511,12 +595,12 @@ export class VillageCenter extends Component {
     render() {
         const{hour,minute,sec}=this.state
         return (
-            <div className="VillageCenter hidden">
-                <div className='selectMode'>
-                    <div onClick={this.upgradeButton} className="buildingHeadButton">Upgrade</div>
-                    <div onClick={this.production} className="buildingHeadButton">Production</div>
-                </div>
+            <div className="VillageCenter InvisibleTemp hidden">
                 <div className="countCss">
+                    <div className='selectMode'>
+                        <div onClick={this.upgradeButton} className="buildingHeadButton">Upgrade</div>
+                        <div onClick={this.production} className="buildingHeadButton">Production</div>
+                    </div>
                     <div onClick={this.closeTab} className="closeButton" >X</div>
                     <div id="villageUpgrade">
                         <div className="buildingTop">
@@ -543,7 +627,7 @@ export class VillageCenter extends Component {
                                     alt="upgrade"
                                     width="25px"
                                     height="25px"></img>
-                                <p>{this.state.incomingUpgrade}  {`${hour}h `}{`${minute}m `}{ sec < 10 ? `0${ sec }s` : `${sec}s` }</p>
+                                <p>{this.state.incomingUpgrade}  {hour===0?``:`${hour}h `}{`${minute}m `}{ sec < 10 ? `0${ sec }s` : `${sec}s` }</p>
                             </div> 
                             <div id="finishVillageUpgrade" style={{display:"none"}}>
                                 <p style={{color:"white",margin:"6px"}}>{this.state.incomingUpgrade}</p>
@@ -568,7 +652,10 @@ export class VillageCenter extends Component {
                         <VillageProduction finish={this.finish} 
                                             clicked={this.selectResource} 
                                             prod={this.state.production}
-                                            storage={this.props.storage}/>
+                                            storage={this.props.storage}
+                                            name={this.props.name}
+                                            timers={this.props.timers}
+                                            />
                     </div>
                 </div>
             </div>
